@@ -10,6 +10,7 @@ export const CUSTOMERS_QUERY = gql`
         id
         name
         tasks(status: $status) {
+          __typename
           id
           title
           status

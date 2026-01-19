@@ -59,9 +59,27 @@ const App = () => {
           status: next,
         },
       },
-    });
+      optimisticResponse: {
+        updateTaskStatus: {
+          __typename: "Task",
+          id: taskId,
+          status: next,
+        },
+      },
+      update(cache, result) {
+        const updated = result.data?.updateTaskStatus;
+        if (!updated) return;
 
-    await refetch();
+        cache.modify({
+          id: cache.identify({ __typename: "Task", id: updated.id }),
+          fields: {
+            status() {
+              return updated.status;
+            },
+          },
+        });
+      },
+    });
   }
 
   if (loading) return <div>Loading...</div>;
