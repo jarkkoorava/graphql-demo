@@ -14,10 +14,9 @@ export const CREATE_TASK_MUTATION = gql`
 export const UPDATE_TASK_STATUS_MUTATION = gql`
   mutation UpdateTaskStatus($input: UpdateTaskStatusInput!) {
     updateTaskStatus(input: $input) {
+      __typename
       id
-      title
       status
-      priority
     }
   }
 `;
