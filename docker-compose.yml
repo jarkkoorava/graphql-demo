@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DJANGO_DEBUG=1
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      # Vite needs polling sometimes on Windows/WSL/VMs; uncomment if needed:
+      # - CHOKIDAR_USEPOLLING=true
+
+      # Optional: have frontend call backend by service name inside compose network
+      - VITE_GRAPHQL_URL=http://localhost:8000/graphql/
+    depends_on:
+      - backend

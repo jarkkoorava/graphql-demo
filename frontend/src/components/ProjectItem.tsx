@@ -16,7 +16,7 @@ const ProjectItem = ({ project }: Props) => {
       </h3>
 
       {project.tasks.length === 0 ? (
-        <div>No tasks for this project</div>
+        <div className="p-4">No tasks</div>
       ) : (
         <ul>
           <TaskList project={project} />
