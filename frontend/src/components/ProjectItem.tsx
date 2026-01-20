@@ -7,13 +7,18 @@ interface Props {
 
 const ProjectItem = ({ project }: Props) => {
   return (
-    <div key={project.id} style={{ marginLeft: 16, marginTop: 10 }}>
-      <h3 style={{ margin: "8px 0" }}>{project.name}</h3>
+    <div className="overflow-hidden rounded-md bg-slate-100 shadow-sm border border-gray-200 mb-4">
+      <h3
+        className="flex justify-between bg-slate-700
+       px-4 py-2 text-white"
+      >
+        Project: {project.name}
+      </h3>
 
       {project.tasks.length === 0 ? (
-        <div style={{ marginLeft: 16, opacity: 0.7 }}>No tasks</div>
+        <div>No tasks for this project</div>
       ) : (
-        <ul style={{ marginTop: 6 }}>
+        <ul>
           <TaskList project={project} />
         </ul>
       )}
