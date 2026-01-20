@@ -1,4 +1,3 @@
-import "./App.css";
 import { TaskActionsProvider } from "./context/TaskActionsProvider";
 import {
   useCustomers,
@@ -94,7 +93,7 @@ const App = () => {
           maxWidth: 900,
         }}
       >
-        <h1 style={{ marginTop: 0 }}>Consultant Planner</h1>
+        <h1 className="text-3xl font-bold text-blue-600">Consultant Planner</h1>
 
         <label style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
           Task status:
