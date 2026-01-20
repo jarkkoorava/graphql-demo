@@ -21,6 +21,26 @@ class TaskPriority(Enum):
     HIGH = "HIGH"
 
 
+def next_customer_id() -> str:
+    existing_nums = []
+    for c in data.customers:
+        if c["id"].startswith("c"):
+            suffix = c["id"][1:]
+            if suffix.isdigit():
+                existing_nums.append(int(suffix))
+    return f"c{(max(existing_nums) if existing_nums else 0) + 1}"
+
+
+def next_project_id() -> str:
+    existing_nums = []
+    for p in data.projects:
+        if p["id"].startswith("p"):
+            suffix = p["id"][1:]
+            if suffix.isdigit():
+                existing_nums.append(int(suffix))
+    return f"p{(max(existing_nums) if existing_nums else 0) + 1}"
+
+
 def next_task_id() -> str:
     existing_nums = []
     for task in data.tasks:
@@ -29,6 +49,18 @@ def next_task_id() -> str:
             if suffix.isdigit():
                 existing_nums.append(int(suffix))
     return f"t{(max(existing_nums) if existing_nums else 0) + 1}"
+
+
+@strawberry.input
+class CreateCustomerInput:
+    name: str
+    industry: Optional[str] = None
+
+
+@strawberry.input
+class CreateProjectInput:
+    customer_id: str
+    name: str
 
 
 @strawberry.input
@@ -145,6 +177,31 @@ class Mutation:
                 )
 
         raise ValueError(f"Task not found: {input.task_id}")
+
+    @strawberry.mutation
+    def create_customer(self, input: CreateCustomerInput) -> Customer:
+        new_customer = {
+            "id": next_customer_id(),
+            "name": input.name,
+            "industry": input.industry,
+        }
+        data.customers.append(new_customer)
+        return Customer(**new_customer)
+
+    @strawberry.mutation
+    def create_project(self, input: CreateProjectInput) -> Project:
+        # Optional validation (nice for interview, but not required)
+        if not any(c["id"] == input.customer_id for c in data.customers):
+            raise ValueError(f"Customer not found: {input.customer_id}")
+
+        new_project = {
+            "id": next_project_id(),
+            "name": input.name,
+            "customer_id": input.customer_id,
+        }
+        data.projects.append(new_project)
+
+        return Project(id=new_project["id"], name=new_project["name"])
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
