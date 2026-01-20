@@ -15,7 +15,7 @@ const TaskItem = ({ task }: Props) => {
   const { toggleDone, updating } = useTaskActions();
   const next = nextStatus(task.status as TaskStatus);
   return (
-    <li className="p-2 border-b border-gray-200 last:border-b-0">
+    <li className="p-4 border-b border-gray-200 last:border-b-0">
       <div className="flex items-center justify-between gap-4 mb-2">
         <div className="flex items-center gap-2">
           <span className="font-medium text-gray-900">

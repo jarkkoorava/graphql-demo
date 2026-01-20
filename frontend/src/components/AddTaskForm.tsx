@@ -32,7 +32,6 @@ const AddTaskForm = ({
       onSubmit={onCreateTask}
       className="overflow-hidden rounded-xl bg-slate-100 shadow-sm border border-gray-200 mb-4"
     >
-      {/* Header (always visible) */}
       <div className="flex items-center justify-between bg-slate-900 px-4 py-2 text-white">
         <div className="font-semibold">Quick add task</div>
 
@@ -52,11 +51,9 @@ const AddTaskForm = ({
         </button>
       </div>
 
-      {/* Body (collapsible) */}
       {quickAddOpen && (
         <div id="quick-add-body" className="p-4">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-12 md:items-end">
-            {/* Project */}
             <div className="md:col-span-5">
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Project
@@ -76,7 +73,6 @@ const AddTaskForm = ({
               </select>
             </div>
 
-            {/* Title */}
             <div className="md:col-span-5">
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Task name
@@ -91,7 +87,6 @@ const AddTaskForm = ({
               />
             </div>
 
-            {/* Priority */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Priority
