@@ -1,15 +1,10 @@
 import { TaskActionsProvider } from "./context/TaskActionsProvider";
-import {
-  useCustomers,
-  useCreateTask,
-  useUpdateTaskStatus,
-} from "./graphql/hooks";
+import { useCustomers, useUpdateTaskStatus } from "./graphql/hooks";
 import { useMemo, useState } from "react";
 import AddTaskForm from "./components/AddTaskForm";
 import CustomerList from "./components/CustomerList";
 import { toProjectOptions } from "./selectors/toProjectOptions";
-import type { FormEvent } from "react";
-import type { TaskPriority, TaskStatus } from "./types/task";
+import type { TaskStatus } from "./types/task";
 import StatusFilter from "./components/StatusFilter";
 import { nextStatus } from "./utils/utils";
 
@@ -18,37 +13,12 @@ const App = () => {
   const statusVar = statusFilter === "ALL" ? undefined : statusFilter;
   const { data, loading, error, refetch } = useCustomers(statusVar);
 
-  const [createTask, { loading: creating }] = useCreateTask();
   const [updateTaskStatus, { loading: updating }] = useUpdateTaskStatus();
-
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
-  const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState<TaskPriority>("MEDIUM");
 
   const projectOptions = useMemo(() => {
     const customers = data?.customers ?? [];
     return toProjectOptions(customers);
   }, [data]);
-
-  async function onCreateTask(e: FormEvent) {
-    e.preventDefault();
-    if (!selectedProjectId || !title.trim()) return;
-
-    await createTask({
-      variables: {
-        input: {
-          projectId: selectedProjectId,
-          title: title.trim(),
-          priority,
-        },
-      },
-    });
-
-    await refetch();
-
-    setTitle("");
-    setPriority("MEDIUM");
-  }
 
   async function toggleDone(taskId: string, current: TaskStatus) {
     const next = nextStatus(current);
@@ -86,36 +56,23 @@ const App = () => {
   return (
     <TaskActionsProvider value={{ toggleDone, updating }}>
       <div className="mx-auto max-w-6xl px-4">
-        <div
-          style={{
-            padding: 16,
-            fontFamily: "system-ui, sans-serif",
-            maxWidth: 900,
+        <h1 className="text-4xl font-bold text-slate-900 text-center mb-6">
+          Project task tool
+        </h1>
+
+        <AddTaskForm
+          projectOptions={projectOptions}
+          onTaskCreated={async () => {
+            await refetch();
           }}
-        >
-          <h1 className="text-4xl font-bold text-slate-900 text-center mb-6">
-            Project task tool
-          </h1>
+        />
 
-          <AddTaskForm
-            onCreateTask={onCreateTask}
-            selectedProjectId={selectedProjectId}
-            setSelectedProjectId={setSelectedProjectId}
-            projectOptions={projectOptions}
-            title={title}
-            setTitle={setTitle}
-            priority={priority}
-            setPriority={setPriority}
-            creating={creating}
-          />
+        <StatusFilter
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+        />
 
-          <StatusFilter
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-          />
-
-          <CustomerList data={data.customers ?? []} />
-        </div>
+        <CustomerList data={data.customers ?? []} />
       </div>
     </TaskActionsProvider>
   );
