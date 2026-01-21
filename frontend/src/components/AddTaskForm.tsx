@@ -1,35 +1,48 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import type { ProjectOption } from "../types/project";
 import type { TaskPriority } from "../types/task";
+import { useCreateTask } from "../graphql/hooks";
 
 interface Props {
-  onCreateTask: (e: React.FormEvent) => void;
-  selectedProjectId: string;
-  setSelectedProjectId: (value: string) => void;
   projectOptions: ProjectOption[];
-  title: string;
-  setTitle: (value: string) => void;
-  priority: TaskPriority;
-  setPriority: (value: TaskPriority) => void;
-  creating: boolean;
+  onTaskCreated?: () => void | Promise<void>;
 }
 
-const AddTaskForm = ({
-  onCreateTask,
-  selectedProjectId,
-  setSelectedProjectId,
-  projectOptions,
-  title,
-  setTitle,
-  priority,
-  setPriority,
-  creating,
-}: Props) => {
+const AddTaskForm = ({ projectOptions, onTaskCreated }: Props) => {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [title, setTitle] = useState("");
+  const [priority, setPriority] = useState<TaskPriority>("MEDIUM");
+
+  const [createTask, { loading: creating }] = useCreateTask();
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!selectedProjectId || !title.trim()) return;
+
+    await createTask({
+      variables: {
+        input: {
+          projectId: selectedProjectId,
+          title: title.trim(),
+          priority,
+        },
+      },
+    });
+
+    if (onTaskCreated) {
+      await onTaskCreated();
+    }
+
+    // Reset form
+    setTitle("");
+    setPriority("MEDIUM");
+  }
 
   return (
     <form
-      onSubmit={onCreateTask}
+      onSubmit={handleSubmit}
       className="overflow-hidden rounded-xl bg-slate-100 shadow-sm border border-gray-200 mb-4"
     >
       <div className="flex items-center justify-between bg-slate-900 px-4 py-2 text-white">
