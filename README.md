@@ -42,3 +42,4 @@ The backend uses seed data defined in `data.py`. All data is stored in backend r
 
 1. Clone the repository
 2. In the project root, run `docker compose up --build`
+3. Frontend can now be accessed at `http://localhost:5173`
